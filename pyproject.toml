@@ -3,8 +3,8 @@ requires = ["setuptools >= 75.5.0", "requests ~= 2.32.3"]
 build-backend = "setuptools.build_meta"
 
 [project]
-name = "sharly-chess-installer"
-description = "An application Windows / MacOS installer and updater for the Sharly Chess application"
+name = "sc-win-updater"
+description = "A windows updater for the Sharly Chess application"
 requires-python = ">=3.13.0"
 version = "0.1.0"
 
@@ -15,5 +15,21 @@ readme = "README.md"
 dependencies = [
   "packaging ~= 26.2",
   "requests ~= 2.34.2",
-  "tqdm ~= 4.68.3",
 ]
+
+[project.optional-dependencies]
+lint = [
+  "python-dotenv ~= 1.2.2",
+  "ruff ~= 0.15.0",
+  "validate-pyproject",
+  "pipdeptree",
+  "mypy >= 1.20.0",
+  "pre-commit",
+]
+
+[tool.ruff.format]
+quote-style = "single"
+
+[tool.mypy]
+check_untyped_defs = true
+disable_error_code = ["import-untyped", "no-redef"]

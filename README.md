@@ -1,19 +1,30 @@
-# sharly-chess-installer
+# Sharly Chess Windows updater
 
-Simple GUI to install or update the [Sharly Chess](https://github.com/Sharly-Chess/sharly-chess) application.  
-Works for both windows and MacOS. The project is split into 2 distinct applications: 
-- The Updater, which simply installs a version of the application  
-- The Installer, an install wizard which additionally provides extra parameters (Windows-only)
+Simple GUI to update the [Sharly Chess](https://github.com/Sharly-Chess/sharly-chess) application on windows.
 
-## Getting started 
+## Getting started
 
-Install dependencies:  
 ```sh
-pip install -e .
+# Create virtual environment
+python -m venv venv
+venv/Scripts/activate
+
+# Install dependencies
+pip install -e .[lint]
+
+# Setup pre-commit hook
+pre-commit install
 ```
 
-Running the applications: 
+Running the applications:
 ```sh
-python src/updater.py # The Updater
-python src/installer.py # The Installer
+python src/main.py
+usage: main.py [-h] [-v VERSION] [-b] [-s]
+
+options:
+  -h, --help            show this help message and exit
+  -v, --version VERSION
+                        Version to install. Defaults to the latest version.
+  -b, --beta            When looking for the latest version, also include beta versions.
+  -s, --skip-admin      Skip the admin elevation.
 ```

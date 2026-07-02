@@ -1,2 +1,0 @@
-# TODO (Molrn) Implement installer
-
