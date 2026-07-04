@@ -1,14 +1,17 @@
 import argparse
+import sys
 from pathlib import Path
 
-from dotenv import load_dotenv
 from packaging.version import InvalidVersion, Version
 
-from common import DEV_ENV, UPDATER_FILE
+from common import DEV_ENV
 from common.admin import ensure_admin_privileges
 from gui.updater_app import UpdaterApp
 
-load_dotenv()
+if DEV_ENV:
+    from dotenv import load_dotenv
+
+    load_dotenv()
 
 parser = argparse.ArgumentParser()
 parser.add_argument(
@@ -23,7 +26,7 @@ parser.add_argument(
     '--output',
     type=str,
     help='Path to the directory in which the new version will be installed.',
-    default=Path('dev-output') if DEV_ENV else UPDATER_FILE.parent,
+    default=(Path('dev-output') if DEV_ENV else Path(sys.executable).resolve().parent),
 )
 parser.add_argument(
     '-b',

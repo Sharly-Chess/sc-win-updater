@@ -1,5 +1,8 @@
 import ctypes
 import sys
+from pathlib import Path
+
+from common import DEV_ENV
 
 
 def _is_windows_admin():
@@ -10,8 +13,13 @@ def _is_windows_admin():
 
 
 def ensure_admin_privileges():
-    if not _is_windows_admin():
-        ctypes.windll.shell32.ShellExecuteW(
-            None, 'runas', sys.executable, ' '.join(sys.argv), None, 1
-        )
-        sys.exit()
+    if _is_windows_admin():
+        return
+    exe_path = Path(sys.executable).absolute()
+    params = sys.argv
+    if not DEV_ENV:
+        params.pop(0)
+    ctypes.windll.shell32.ShellExecuteW(
+        None, 'runas', str(exe_path), ' '.join(params), None, 1
+    )
+    sys.exit()

@@ -5,3 +5,8 @@ __pycache__/
 .env
 /dev-input/
 /dev-output/
+
+# Export
+/build/
+/dist/
+sc-win-updater-*.spec

@@ -1,0 +1,74 @@
+name: Create release
+
+on:
+  push:
+    tags:
+      - 'v*'
+
+permissions:
+  contents: write
+  issues: write
+
+jobs:
+
+  export:
+    runs-on: windows-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v7.0.0
+
+      - name: Setup Python
+        uses: actions/setup-python@v6.3.0
+        with:
+          python-version: 3.13
+
+      - name: Install dependencies
+        shell: cmd
+        run: |
+          pip install -e .[export]
+
+      - name: Set version variable
+        id: version
+        shell: bash
+        run: |
+          echo "VERSION=${GITHUB_REF_NAME#v}" | tee -a $GITHUB_ENV
+
+      - name: Generate EXE file
+        shell: powershell
+        run: |
+          python scripts/export.py
+
+      - name: Upload artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: sc-win-updater-${{ env.VERSION }}
+          path: |
+            dist/sc-win-updater-${{ env.VERSION }}.exe
+
+  create-release:
+    needs: [export]
+    runs-on: ubuntu-latest
+    steps:
+      - name: Set version variable
+        id: version
+        shell: bash
+        run: |
+          echo "VERSION=${GITHUB_REF_NAME#v}" | tee -a $GITHUB_ENV
+
+      - name: Checkout repository
+        uses: actions/checkout@v7.0.0
+
+      - name: Download artifacts
+        uses: actions/download-artifact@v8.0.1
+        with:
+          name: sc-win-updater-${{ env.VERSION }}
+          path: dist/
+
+      - name: Create release
+        uses: ncipollo/release-action@v1.21.0
+        with:
+          name: ${{ env.VERSION }}
+          draft: true
+          artifacts: "dist/*"
+          artifactErrorsFailBuild: true
+          bodyFile: RELEASE_NOTES.md

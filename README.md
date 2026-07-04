@@ -10,7 +10,7 @@ python -m venv venv
 venv/Scripts/activate
 
 # Install dependencies
-pip install -e .[lint]
+pip install -e .[lint, dev]
 
 # Setup pre-commit hook
 pre-commit install

@@ -13,6 +13,7 @@ from packaging.version import Version
 from requests import get
 from requests.exceptions import RequestException  # pylint: disable=redefined-builtin
 
+from common import APP_VERSION
 from common.exception import SCInstallerException
 from common.i18n import _
 from version_installer.installer_status import InstallerStatus
@@ -26,7 +27,6 @@ class VersionInstaller:
         status: InstallerStatus,
         version: Version | None = None,
         check_beta: bool = False,
-        avoid_file: Path | None = None,
         add_windows_firewall_rule: bool = False,
     ) -> Version:
         """Install a version at the provided install directory.
@@ -61,9 +61,10 @@ class VersionInstaller:
             cls._extract_zip_file(zip_file, extract_dir, set_progress, 20, 60)
             set_label(_('Checking files integrity...'))
             cls._check_missing_files(extract_dir)
+            cls._remove_unimported_files(extract_dir)
             set_progress(63)
             set_label(_('Unblocking files...'))
-            cls._check_missing_files(extract_dir)
+            cls._unblock_files(extract_dir)
             set_progress(66)
             set_label(_('Uninstalling previous version...'))
             cls._uninstall_previous_version(install_dir, version)
@@ -76,7 +77,6 @@ class VersionInstaller:
                 set_progress=set_progress,
                 progress_start=70,
                 progress_end=99,
-                avoid_file=avoid_file,
             )
             if add_windows_firewall_rule:
                 set_label(_('Adding firewall rule...'))
@@ -190,6 +190,15 @@ class VersionInstaller:
             raise SCInstallerException(error)
 
     @staticmethod
+    def _remove_unimported_files(version_dir: Path):
+        for file in [
+            version_dir / 'tmp' / 'control_file.json',
+            version_dir / 'tmp' / '.block-zip-usage',
+            version_dir / f'updater-{APP_VERSION}.exe',
+        ]:
+            file.unlink(missing_ok=True)
+
+    @staticmethod
     def _unblock_files(version_dir: Path):
         for root_, __, files in os.walk(version_dir):
             for name in files:
@@ -230,17 +239,12 @@ class VersionInstaller:
         set_progress: Callable[[float], None],
         progress_start: int,
         progress_end: int,
-        avoid_file: Path | None = None,
     ):
         progress = float(progress_start)
         progress_rate = progress_end - progress_start
         step = 100
         src_files = list(src_dir.glob('**/*'))
         step_progress = progress_rate * step / len(src_files)
-        if avoid_file:
-            if dst_dir in avoid_file.parents:
-                src_avoid = src_dir / avoid_file.relative_to(dst_dir)
-                src_avoid.unlink(missing_ok=True)
         for index, src_file in enumerate(src_files, start=1):
             if index % step == 0:
                 progress += step_progress

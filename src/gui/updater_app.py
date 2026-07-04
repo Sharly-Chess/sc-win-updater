@@ -7,7 +7,7 @@ import tkinter.messagebox
 
 from packaging.version import Version
 
-from common import UPDATER_FILE, ICON_FILE
+from common import ICON_FILE
 from common.exception import SCInstallerException
 from common.i18n import _
 from version_installer.installer_status import InstallerStatus
@@ -26,10 +26,6 @@ class UpdaterApp(tk.Tk):
         self.check_beta = check_beta
         self.install_dir = install_dir
 
-        self.title(_('Sharly Chess update'))
-        self.iconbitmap(ICON_FILE)
-        self.resizable(False, False)
-
         # Set window in the middle of the screen
         screen_w = self.winfo_screenwidth()
         screen_h = self.winfo_screenheight()
@@ -38,6 +34,10 @@ class UpdaterApp(tk.Tk):
         x = (screen_w // 2) - (window_w // 2)
         y = (screen_h // 2) - (window_h // 2) - 100
         self.geometry(f'{window_w}x{window_h}+{x}+{y}')
+
+        self.title(_('Sharly Chess update'))
+        self.iconbitmap(ICON_FILE)
+        self.resizable(False, False)
 
         # Widgets
         self.label = ttk.Label(self)
@@ -63,7 +63,6 @@ class UpdaterApp(tk.Tk):
                     check_beta=self.check_beta,
                     install_dir=self.install_dir,
                     status=status,
-                    avoid_file=UPDATER_FILE,
                 )
             except Exception as e:
                 if isinstance(e, SCInstallerException):
