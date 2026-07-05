@@ -20,11 +20,10 @@ def run_babel_command(
         babel_command,
     ] + list(map(str, babel_args))  # map to ensure all args are passed as strings
     if return_code := CommandLineInterface().run(argv):
-        print(f'Babel command returned {return_code}, exiting.\nArguments:{'\n- '.join(argv)}')
-        sys.exit(1)
+        raise RuntimeError(f'Babel command returned {return_code}, exiting.\nArguments:{'\n- '.join(argv)}')
 
 
-def main():
+def update_i18n_files():
     """Update the i18n files."""
     locales_dir: Path = Path(__file__).resolve().parents[1] / 'locale'
     print(f'Locale folder: {locales_dir}')
@@ -89,4 +88,4 @@ def main():
 
 
 if __name__ == '__main__':
-    main()
+    update_i18n_files()

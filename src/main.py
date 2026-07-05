@@ -4,7 +4,7 @@ from pathlib import Path
 
 from packaging.version import InvalidVersion, Version
 
-from common import DEVEL_ENV
+from common import DEVEL_ENV, BASE_DIR
 from common.admin import ensure_admin_privileges
 from common.i18n import get_default_locale, set_locale
 from gui.updater_app import UpdaterApp
@@ -28,7 +28,7 @@ parser.add_argument(
     type=str,
     help='Path to the directory in which the new version will be installed.',
     default=(
-        Path('dev-output') if DEVEL_ENV else Path(sys.executable).resolve().parent
+        (BASE_DIR / 'dev-output') if DEVEL_ENV else Path(sys.executable).resolve().parent
     ),
 )
 parser.add_argument(
