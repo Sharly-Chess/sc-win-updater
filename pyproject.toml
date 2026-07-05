@@ -18,7 +18,10 @@ dependencies = [
 ]
 
 [project.optional-dependencies]
-dev = ["python-dotenv ~= 1.2.2"]
+dev = [
+    "python-dotenv ~= 1.2.2",
+    "babel ~= 2.16.0",
+]
 lint = [
   "ruff ~= 0.15.0",
   "validate-pyproject",

@@ -1,0 +1,60 @@
+msgid "Adding firewall rule..."
+msgstr ""
+
+msgid "An error occurred while requesting GitHub."
+msgstr ""
+
+msgid "An unexpected error occurred:"
+msgstr ""
+
+msgid "Checking files integrity..."
+msgstr ""
+
+msgid "Copying files to install directory..."
+msgstr ""
+
+msgid "Downloading failed with code [{code}]."
+msgstr ""
+
+msgid "Downloading version [{version}] from GitHub..."
+msgstr ""
+
+msgid "Error while adding firewall rule."
+msgstr ""
+
+msgid "Extracting archive..."
+msgstr ""
+
+msgid "Searching for the latest version..."
+msgstr ""
+
+msgid "Sharly Chess is already running, stop it then try again."
+msgstr ""
+
+msgid "Sharly Chess update"
+msgstr ""
+
+msgid "Some files are missing from the downloading:"
+msgstr ""
+
+msgid "Starting installer..."
+msgstr ""
+
+msgid "The new version has successfully been installed. Close this message to restart Sharly Chess."
+msgstr ""
+
+msgid "Unblocking files..."
+msgstr ""
+
+msgid "Uninstalling previous version..."
+msgstr ""
+
+msgid "Update complete"
+msgstr ""
+
+msgid "Update complete."
+msgstr ""
+
+msgid "Update error"
+msgstr ""
+
