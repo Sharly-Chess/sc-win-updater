@@ -2,6 +2,7 @@ import json
 import os
 import re
 import shutil
+import sys
 import tempfile
 import zipfile
 import subprocess
@@ -219,8 +220,10 @@ class VersionInstaller:
             exe_path = install_dir / cls.exe_file(version)
             exe_path.unlink(missing_ok=True)
             internal = install_dir / '_internal'
-            if internal.exists():
-                shutil.rmtree(internal)
+            updater_path = Path(sys.executable)
+            for file in internal.glob('**/*'):
+                if file.is_file() and file != updater_path:
+                    file.unlink(missing_ok=True)
         except PermissionError:
             raise SCUpdaterException(
                 _('Sharly Chess is already running, stop it then try again.')
