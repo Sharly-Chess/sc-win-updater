@@ -194,7 +194,7 @@ class VersionInstaller:
     def _remove_unimported_files(version_dir: Path):
         for file in [
             version_dir / 'tmp' / 'control_file.json',
-            version_dir / 'tmp' / '.block-zip-usage',
+            version_dir / 'tmp' / '.direct-download-blocker',
             version_dir / f'updater-{APP_VERSION}.exe',
         ]:
             file.unlink(missing_ok=True)
