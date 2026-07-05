@@ -4,11 +4,12 @@ from pathlib import Path
 
 from packaging.version import InvalidVersion, Version
 
-from common import DEV_ENV
+from common import DEVEL_ENV
 from common.admin import ensure_admin_privileges
+from common.i18n import set_locale
 from gui.updater_app import UpdaterApp
 
-if DEV_ENV:
+if DEVEL_ENV:
     from dotenv import load_dotenv
 
     load_dotenv()
@@ -26,7 +27,7 @@ parser.add_argument(
     '--output',
     type=str,
     help='Path to the directory in which the new version will be installed.',
-    default=(Path('dev-output') if DEV_ENV else Path(sys.executable).resolve().parent),
+    default=(Path('dev-output') if DEVEL_ENV else Path(sys.executable).resolve().parent),
 )
 parser.add_argument(
     '-b',
@@ -40,7 +41,16 @@ parser.add_argument(
     action='store_true',
     help='Skip the admin elevation.',
 )
+parser.add_argument(
+    '-l',
+    '--locale',
+    type=str,
+    help='The locale to use.',
+)
 args = parser.parse_args()
+
+if args.locale:
+    set_locale(args.locale)
 
 if not args.skip_admin:
     ensure_admin_privileges()

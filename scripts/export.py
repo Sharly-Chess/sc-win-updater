@@ -28,6 +28,9 @@ def generate_pyinstaller_params():
     files: list[Path] = [
         ICON_FILE,
     ]
+    files += [
+        file for file in (BASE_DIR / 'locale').glob('**/*.mo') if file.is_file()
+    ]
     for file in files:
         if not file.is_file():
             continue
