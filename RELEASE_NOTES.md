@@ -1,2 +1,1 @@
-- Localize in french / english
-- Fix icon not found
+Allow updater file to be inside _internal
