@@ -1,5 +1,5 @@
 import os
-import threading
+from threading import Thread
 import tkinter as tk
 from pathlib import Path
 from tkinter import ttk
@@ -8,7 +8,7 @@ import tkinter.messagebox
 from packaging.version import Version
 
 from common import ICON_FILE
-from common.exception import SCInstallerException
+from common.exception import SCUpdaterException
 from common.i18n import _
 from version_installer.installer_status import InstallerStatus
 from version_installer.version_installer import VersionInstaller
@@ -17,14 +17,16 @@ from version_installer.version_installer import VersionInstaller
 class UpdaterApp(tk.Tk):
     def __init__(
         self,
-        version: Version,
         check_beta: bool,
         install_dir: Path,
+        locale: str,
+        version: Version | None = None,
     ):
         super().__init__()
-        self.version = version
         self.check_beta = check_beta
         self.install_dir = install_dir
+        self.version = version
+        self.locale = locale
 
         # Set window in the middle of the screen
         screen_w = self.winfo_screenwidth()
@@ -63,20 +65,21 @@ class UpdaterApp(tk.Tk):
                     check_beta=self.check_beta,
                     install_dir=self.install_dir,
                     status=status,
+                    locale=self.locale,
                 )
             except Exception as e:
-                if isinstance(e, SCInstallerException):
+                if isinstance(e, SCUpdaterException):
                     error = str(e)
                 else:
                     error = _('An unexpected error occurred:')
                     error += f'\n\n{e}'
                 status.error = error
 
-        thread = threading.Thread(target=run_installer)
+        thread = Thread(target=run_installer)
         thread.start()
         self._check_install_status(status, thread)
 
-    def _check_install_status(self, status: InstallerStatus, thread: threading.Thread):
+    def _check_install_status(self, status: InstallerStatus, thread: Thread):
         if thread.is_alive():
             if status.modified:
                 self._set_progress_and_label(status.progress, status.label)
@@ -84,7 +87,7 @@ class UpdaterApp(tk.Tk):
         elif status.error:
             self._show_retry_dialog(status.error)
         else:
-            self._set_progress_and_label(100, _('Update complete.'))
+            self._set_progress_and_label(100, _('Done.'))
             self._show_succes_dialog()
 
     def _show_retry_dialog(self, error: str):
@@ -101,8 +104,8 @@ class UpdaterApp(tk.Tk):
         tk.messagebox.showinfo(
             title=_('Update complete'),
             message=_(
-                'The new version has successfully been installed. '
-                'Close this message to restart Sharly Chess.'
+                'The new version has successfully been '
+                'installed. Close to restart Sharly Chess.'
             ),
         )
 

@@ -6,7 +6,7 @@ from packaging.version import InvalidVersion, Version
 
 from common import DEVEL_ENV
 from common.admin import ensure_admin_privileges
-from common.i18n import set_locale
+from common.i18n import get_default_locale, set_locale
 from gui.updater_app import UpdaterApp
 
 if DEVEL_ENV:
@@ -27,7 +27,9 @@ parser.add_argument(
     '--output',
     type=str,
     help='Path to the directory in which the new version will be installed.',
-    default=(Path('dev-output') if DEVEL_ENV else Path(sys.executable).resolve().parent),
+    default=(
+        Path('dev-output') if DEVEL_ENV else Path(sys.executable).resolve().parent
+    ),
 )
 parser.add_argument(
     '-b',
@@ -49,9 +51,6 @@ parser.add_argument(
 )
 args = parser.parse_args()
 
-if args.locale:
-    set_locale(args.locale)
-
 if not args.skip_admin:
     ensure_admin_privileges()
 
@@ -62,9 +61,13 @@ if args.version:
     except InvalidVersion:
         print(f'Invalid version [{args.version}], falling back to latest version.')
 
+locale = args.locale or get_default_locale()
+set_locale(locale)
+
 app = UpdaterApp(
-    version=version,
     check_beta=args.beta,
     install_dir=Path(args.output),
+    version=version,
+    locale=locale,
 )
 app.mainloop()

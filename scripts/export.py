@@ -4,13 +4,18 @@ from PyInstaller.__main__ import run as run_pyinstaller
 
 from common import APP_NAME, APP_VERSION, ICON_FILE, BASE_DIR
 
-basename = f'{APP_NAME}-{APP_VERSION}'
+BASE_NAME = f'{APP_NAME}-{APP_VERSION}'
+
+
+def clean_dist():
+    exe_path = BASE_DIR / 'dist' / f'{BASE_NAME}.exe'
+    exe_path.unlink(missing_ok=True)
 
 
 def generate_pyinstaller_params():
     params = [
         'src/main.py',
-        f'--name={basename}',
+        f'--name={BASE_NAME}',
         f'--icon={ICON_FILE}',
         '--clean',
         '--noconfirm',
@@ -28,16 +33,15 @@ def generate_pyinstaller_params():
     files: list[Path] = [
         ICON_FILE,
     ]
-    files += [
-        file for file in (BASE_DIR / 'locale').glob('**/*.mo') if file.is_file()
-    ]
+    files += list((BASE_DIR / 'locale').glob('**/*.mo'))
     for file in files:
         if not file.is_file():
             continue
-        relative_path = file.relative_to(BASE_DIR)
+        relative_path = file.parent.relative_to(BASE_DIR)
         params.append(f'--add-data={file};{relative_path}')
     return params
 
 
-params = generate_pyinstaller_params()
-run_pyinstaller(params)
+pyinstaller_params = generate_pyinstaller_params()
+clean_dist()
+run_pyinstaller(pyinstaller_params)
