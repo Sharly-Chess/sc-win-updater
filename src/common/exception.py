@@ -1,2 +1,2 @@
-class SCInstallerException(Exception):
+class SCUpdaterException(Exception):
     pass

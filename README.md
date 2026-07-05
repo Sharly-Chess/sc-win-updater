@@ -19,7 +19,7 @@ pre-commit install
 Running the applications:
 ```sh
 python src/main.py
-usage: main.py [-h] [-v VERSION] [-o OUTPUT] [-b] [-s]
+usage: main.py [-h] [-v VERSION] [-o OUTPUT] [-b] [-s] [-l LOCALE]
 
 options:
   -h, --help            show this help message and exit
@@ -28,4 +28,5 @@ options:
   -o, --output OUTPUT   Path to the directory in which the new version will be installed.
   -b, --beta            When looking for the latest version, also include beta versions.
   -s, --skip-admin      Skip the admin elevation.
+  -l, --locale LOCALE   The locale to use.
 ```

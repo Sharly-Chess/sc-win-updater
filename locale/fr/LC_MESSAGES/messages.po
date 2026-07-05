@@ -1,60 +1,60 @@
 msgid "Adding firewall rule..."
-msgstr ""
-
-msgid "An error occurred while requesting GitHub."
-msgstr ""
+msgstr "Ajout d'une règle de pare-feux..."
 
 msgid "An unexpected error occurred:"
-msgstr ""
+msgstr "Une erreur inattendue a eu lieu :"
 
 msgid "Checking files integrity..."
-msgstr ""
+msgstr "Vérification de l'intégrité des fichiers..."
 
 msgid "Copying files to install directory..."
-msgstr ""
+msgstr "Copie des fichiers vers le dossier d'installation..."
 
-msgid "Downloading failed with code [{code}]."
-msgstr ""
+msgid "Done."
+msgstr "Terminé."
 
-msgid "Downloading version [{version}] from GitHub..."
-msgstr ""
+msgid "Downloading ZIP file of version {version}..."
+msgstr "Téléchargement du fichier ZIP de la version {version}..."
+
+msgid "Downloading failed (code {code})."
+msgstr "Échec du téléchargement (code {code})."
 
 msgid "Error while adding firewall rule."
-msgstr ""
+msgstr "Erreur lors de l'ajout de la règle de pare-feux."
 
-msgid "Extracting archive..."
-msgstr ""
+msgid "Extracting ZIP file..."
+msgstr "Extraction du fichier ZIP..."
+
+msgid "Invalid response received from GitHub."
+msgstr "Une réponse invalide a été reçue de la part de GitHub."
+
+msgid "Request to GitHub failed (code {code})."
+msgstr "La requête de GitHub a échoué (code {code})."
 
 msgid "Searching for the latest version..."
-msgstr ""
+msgstr "Recherche de la dernière version..."
 
 msgid "Sharly Chess is already running, stop it then try again."
-msgstr ""
+msgstr "Sharly Chess est déjà en cours, arrêtez l'application puis réessayez."
 
 msgid "Sharly Chess update"
-msgstr ""
+msgstr "Mise à jour Sharly Chess"
 
 msgid "Some files are missing from the downloading:"
-msgstr ""
+msgstr "Certains fichiers manquent dans le téléchargement :"
 
 msgid "Starting installer..."
-msgstr ""
+msgstr "Démarrage de l'installeur..."
 
-msgid "The new version has successfully been installed. Close this message to restart Sharly Chess."
-msgstr ""
-
-msgid "Unblocking files..."
-msgstr ""
+msgid "The new version has successfully been installed. Close to restart Sharly Chess."
+msgstr "La nouvelle version a été installée avec succès. Fermer pour redémarrer Sharly Chess."
 
 msgid "Uninstalling previous version..."
-msgstr ""
+msgstr "Désinstallation de la version précédente..."
 
 msgid "Update complete"
-msgstr ""
-
-msgid "Update complete."
-msgstr ""
+msgstr "Mise à jour terminée"
 
 msgid "Update error"
-msgstr ""
+msgstr "Échec de la mise à jour"
 

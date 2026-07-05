@@ -1,1 +1,2 @@
-Initial release
+- Localize in french / english
+- Fix icon not found

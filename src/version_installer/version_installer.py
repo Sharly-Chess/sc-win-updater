@@ -11,11 +11,10 @@ from typing import Any, Callable
 
 from packaging.version import Version
 from requests import get
-from requests.exceptions import RequestException  # pylint: disable=redefined-builtin
 
 from common import APP_VERSION
-from common.exception import SCInstallerException
-from common.i18n import _
+from common.exception import SCUpdaterException
+from common.i18n import _, set_locale
 from version_installer.installer_status import InstallerStatus
 
 
@@ -28,10 +27,14 @@ class VersionInstaller:
         version: Version | None = None,
         check_beta: bool = False,
         add_windows_firewall_rule: bool = False,
+        locale: str | None = None,
     ) -> Version:
         """Install a version at the provided install directory.
         If no version is provided, search for the latest one.
-        raises a SCInstallerException if it fails."""
+        raises a SCUpdaterException if it fails."""
+
+        if locale:
+            set_locale(locale)
 
         def set_progress(progress: float):
             status.progress = progress
@@ -50,20 +53,19 @@ class VersionInstaller:
         with tempfile.TemporaryDirectory() as _tmp_dir:
             tmp_dir = Path(_tmp_dir)
             set_label(
-                _('Downloading version [{version}] from GitHub...').format(
+                _('Downloading ZIP file of version {version}...').format(
                     version=version
                 )
             )
             zip_file = tmp_dir / cls._get_asset_name(version)
             cls._download_version_zip_file(version, zip_file, set_progress, 5, 20)
             extract_dir = tmp_dir / f'sharly-chess-{version}'
-            set_label(_('Extracting archive...'))
+            set_label(_('Extracting ZIP file...'))
             cls._extract_zip_file(zip_file, extract_dir, set_progress, 20, 60)
             set_label(_('Checking files integrity...'))
             cls._check_missing_files(extract_dir)
             cls._remove_unimported_files(extract_dir)
             set_progress(63)
-            set_label(_('Unblocking files...'))
             cls._unblock_files(extract_dir)
             set_progress(66)
             set_label(_('Uninstalling previous version...'))
@@ -136,10 +138,8 @@ class VersionInstaller:
         download_url = cls._get_asset_url(version)
         response = get(download_url, allow_redirects=True, stream=True, timeout=10)
         if response.status_code != 200:
-            raise SCInstallerException(
-                _('Downloading failed with code [{code}].').format(
-                    code=response.status_code
-                )
+            raise SCUpdaterException(
+                _('Downloading failed (code {code}).').format(code=response.status_code)
             )
         total_size = int(response.headers.get('content-length', 1))
         progress = 5.0
@@ -187,7 +187,7 @@ class VersionInstaller:
             error = _('Some files are missing from the downloading:')
             for file in missing_files:
                 error += f'\n  - {file}'
-            raise SCInstallerException(error)
+            raise SCUpdaterException(error)
 
     @staticmethod
     def _remove_unimported_files(version_dir: Path):
@@ -222,7 +222,7 @@ class VersionInstaller:
             if internal.exists():
                 shutil.rmtree(internal)
         except PermissionError:
-            raise SCInstallerException(
+            raise SCUpdaterException(
                 _('Sharly Chess is already running, stop it then try again.')
             )
 
@@ -265,18 +265,23 @@ class VersionInstaller:
         try:
             subprocess.run(command, shell=True, check=True)
         except subprocess.CalledProcessError:
-            raise SCInstallerException(_('Error while adding firewall rule.'))
+            raise SCUpdaterException(_('Error while adding firewall rule.'))
 
     @classmethod
     def _get_github_releases(cls) -> list[dict[str, Any]]:
         url = 'https://api.github.com/repos/sharly-chess/sharly-chess/releases'
+        response = get(url, allow_redirects=True, timeout=5)
+        if response.status_code != 200:
+            raise SCUpdaterException(
+                _('Request to GitHub failed (code {code}).').format(
+                    code=response.status_code
+                )
+            )
         try:
-            response = get(url, allow_redirects=True, timeout=5)
-            response.raise_for_status()
             data = response.content.decode()
             return json.loads(data)
-        except (RequestException, JSONDecodeError):
-            raise SCInstallerException(_('An error occurred while requesting GitHub.'))
+        except JSONDecodeError:
+            raise SCUpdaterException(_('Invalid response received from GitHub.'))
 
     @classmethod
     def _get_asset_name(cls, version: Version) -> str:
