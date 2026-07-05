@@ -27,6 +27,17 @@ jobs:
         run: |
           pip install -e .[export]
 
+      - name: Generate i18n files
+        shell: cmd
+        run: |
+          python scripts/i18n_update.py
+
+      # Only required to generate i18n files
+      - name: Uninstall babel
+        shell: cmd
+        run: |
+          pip uninstall babel
+
       - name: Set version variable
         id: version
         shell: bash
