@@ -1,1 +1,2 @@
-Rename blocker file
+- Auto determine prod output
+- Use Pyintaller param to run as admin
