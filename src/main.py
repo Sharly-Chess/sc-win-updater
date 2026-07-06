@@ -4,9 +4,8 @@ from pathlib import Path
 
 from packaging.version import InvalidVersion, Version
 
-from common import DEVEL_ENV
-from common.admin import ensure_admin_privileges
-from common.i18n import get_default_locale, set_locale
+from common import DEVEL_ENV, BASE_DIR
+from common.i18n import get_default_locale, set_locale, locales
 from gui.updater_app import UpdaterApp
 
 if DEVEL_ENV:
@@ -21,27 +20,17 @@ parser.add_argument(
     type=str,
     help='Version to install. Defaults to the latest version.',
 )
-
 parser.add_argument(
     '-o',
     '--output',
     type=str,
     help='Path to the directory in which the new version will be installed.',
-    default=(
-        Path('dev-output') if DEVEL_ENV else Path(sys.executable).resolve().parent
-    ),
 )
 parser.add_argument(
     '-b',
     '--beta',
     action='store_true',
     help='When looking for the latest version, also include beta versions.',
-)
-parser.add_argument(
-    '-s',
-    '--skip-admin',
-    action='store_true',
-    help='Skip the admin elevation.',
 )
 parser.add_argument(
     '-l',
@@ -51,9 +40,6 @@ parser.add_argument(
 )
 args = parser.parse_args()
 
-if not args.skip_admin:
-    ensure_admin_privileges()
-
 version: Version | None = None
 if args.version:
     try:
@@ -61,12 +47,28 @@ if args.version:
     except InvalidVersion:
         print(f'Invalid version [{args.version}], falling back to latest version.')
 
-locale = args.locale or get_default_locale()
+locale = get_default_locale()
+if args.locale and args.locale not in locales:
+    print('Unknown locale [%s] (expected: %s), falling back to [%s].')
+elif args.locale:
+    locale = args.locale
 set_locale(locale)
+
+if args.output:
+    install_dir = Path(args.output)
+elif DEVEL_ENV:
+    install_dir = BASE_DIR / 'dev-output'
+else:
+    exe_path = Path(sys.executable).resolve()
+    install_dir = exe_path.parent / 'output'
+    for parent in exe_path.parents:
+        if (parent / 'sharly-chess.exe').exists():
+            install_dir = parent
+            break
 
 app = UpdaterApp(
     check_beta=args.beta,
-    install_dir=Path(args.output),
+    install_dir=install_dir,
     version=version,
     locale=locale,
 )

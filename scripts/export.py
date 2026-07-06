@@ -1,3 +1,4 @@
+import shutil
 from pathlib import Path
 
 from PyInstaller.__main__ import run as run_pyinstaller
@@ -7,9 +8,16 @@ from common import APP_NAME, APP_VERSION, ICON_FILE, BASE_DIR
 BASE_NAME = f'{APP_NAME}-{APP_VERSION}'
 
 
-def clean_dist():
+def pre_cleanup():
     exe_path = BASE_DIR / 'dist' / f'{BASE_NAME}.exe'
     exe_path.unlink(missing_ok=True)
+
+
+def post_cleanup():
+    build_dir = BASE_DIR / 'build' / BASE_NAME
+    shutil.rmtree(build_dir)
+    spec_file = BASE_DIR / f'{BASE_NAME}.spec'
+    spec_file.unlink(missing_ok=True)
 
 
 def generate_pyinstaller_params():
@@ -24,6 +32,7 @@ def generate_pyinstaller_params():
         '--paths=.',
         '--windowed',
         '--onefile',
+        '--uac-admin',
         '--optimize',
         '1',
     ]
@@ -42,6 +51,7 @@ def generate_pyinstaller_params():
     return params
 
 
+pre_cleanup()
 pyinstaller_params = generate_pyinstaller_params()
-clean_dist()
 run_pyinstaller(pyinstaller_params)
+post_cleanup()

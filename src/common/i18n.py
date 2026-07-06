@@ -63,9 +63,7 @@ def set_locale(locale: str):
     if hasattr(_thread_local_data, 'locale') and _thread_local_data.locale == locale:
         return
     if locale not in locales:
-        raise SCUpdaterException(
-            f'Unknown locale {locale} (expected: {", ".join(locales)})'
-        )
+        raise SCUpdaterException('Unknown locale [%s] (expected: %s)')
     _thread_local_data.locale = locale
     if DEVEL_ENV:
         print(f'Locale set to [{locale}].')
