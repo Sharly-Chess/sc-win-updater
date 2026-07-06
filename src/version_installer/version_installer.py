@@ -13,7 +13,6 @@ from typing import Any, Callable
 from packaging.version import Version
 from requests import get
 
-from common import APP_VERSION
 from common.exception import SCUpdaterException
 from common.i18n import _, set_locale
 from version_installer.installer_status import InstallerStatus
@@ -65,7 +64,7 @@ class VersionInstaller:
             cls._extract_zip_file(zip_file, extract_dir, set_progress, 20, 60)
             set_label(_('Checking files integrity...'))
             cls._check_missing_files(extract_dir)
-            cls._remove_unimported_files(extract_dir)
+            cls._remove_unimported_files(extract_dir, install_dir)
             set_progress(63)
             cls._unblock_files(extract_dir)
             set_progress(66)
@@ -191,12 +190,15 @@ class VersionInstaller:
             raise SCUpdaterException(error)
 
     @staticmethod
-    def _remove_unimported_files(version_dir: Path):
-        for file in [
+    def _remove_unimported_files(version_dir: Path, install_dir: Path):
+        updater_path = Path(sys.executable).resolve()
+        not_imported = [
             version_dir / 'tmp' / 'control_file.json',
             version_dir / 'tmp' / '.direct-download-blocker',
-            version_dir / f'updater-{APP_VERSION}.exe',
-        ]:
+        ]
+        if install_dir in updater_path.parents:
+            not_imported.append(version_dir / updater_path.relative_to(install_dir))
+        for file in not_imported:
             file.unlink(missing_ok=True)
 
     @staticmethod
